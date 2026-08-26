@@ -1,0 +1,37 @@
+{
+  "name": "job-queue-service",
+  "version": "1.0.0",
+  "description": "A production-oriented backend service for reliably distributing asynchronous work among concurrent workers. Clients enqueue durable jobs, workers atomically claim and acknowledge them, while the system handles concurrency, leases, retries, idempotency, worker failures, and high-volume workloads using PostgreSQL. The project is designed to explore real-world backend engineering concerns beyond basic CRUD, including transactions, locking, indexing, query performance, load testing, and correctness under failure and concurrency. Stack: TypeScript, Node.js, Express, PostgreSQL, Drizzle ORM, Docker, and Python for load testing.",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run",
+    "dev" : "tsx src/server.ts",
+    "build" : "tsc",
+    "generate": "npx drizzle-kit generate",
+    "migrate": "npx drizzle-kit migrate"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rain-lab5/Job-Queue-Service.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rain-lab5/Job-Queue-Service/issues"
+  },
+  "homepage": "https://github.com/rain-lab5/Job-Queue-Service#readme",
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "express": "^5.2.1",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.3.0",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}
