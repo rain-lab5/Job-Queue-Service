@@ -1,0 +1,3 @@
+A production-oriented backend service for reliably distributing asynchronous work among concurrent workers. Clients enqueue durable jobs, workers atomically claim and acknowledge them, while the system handles concurrency, leases, retries, idempotency, worker failures, and high-volume workloads using PostgreSQL.
+The project is designed to explore real-world backend engineering concerns beyond basic CRUD, including transactions, locking, indexing, query performance, load testing, and correctness under failure and concurrency.
+Stack: TypeScript, Node.js, Express, PostgreSQL, Drizzle ORM, Docker, and Python for load testing.
