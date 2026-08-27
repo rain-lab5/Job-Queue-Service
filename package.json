@@ -15,7 +15,7 @@
     "url": "git+https://github.com/rain-lab5/Job-Queue-Service.git"
   },
   "keywords": [],
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/rain-lab5/Job-Queue-Service/issues"
   },
