@@ -1,0 +1,20 @@
+services : 
+  postgres: 
+    image: postgres:18.1
+    environment:
+      POSTGRES_USER : ${DB_USER}
+      POSTGRES_PASSWORD : ${DB_PASS}
+      POSTGRES_DB : ${DB_NAME}
+    ports : 
+      - "15432:5432"
+    restart: unless-stopped  
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+      interval: 2s
+      timeout : 5s
+      retries : 30
+    volumes :
+     - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
