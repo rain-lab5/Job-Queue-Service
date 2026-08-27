@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
-    "dev" : "tsx src/server.ts",
-    "build" : "tsc",
+    "dev": "tsx src/server.ts",
+    "build": "tsc",
     "generate": "npx drizzle-kit generate",
     "migrate": "npx drizzle-kit migrate"
   },
@@ -21,9 +21,11 @@
   },
   "homepage": "https://github.com/rain-lab5/Job-Queue-Service#readme",
   "dependencies": {
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "express": "^5.2.1",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
