@@ -7,8 +7,11 @@
     "test": "vitest run",
     "dev": "tsx src/server.ts",
     "build": "tsc",
-    "generate": "npx drizzle-kit generate",
-    "migrate": "npx drizzle-kit migrate"
+    "generate": "drizzle-kit generate",
+    "migrate": "node dist/db/migrate.js",
+    "start": "node dist/server.js",
+    "test:integration": "node scripts/test-integration.mjs",
+    "benchmark": "node --import tsx scripts/benchmark.mjs"
   },
   "repository": {
     "type": "git",

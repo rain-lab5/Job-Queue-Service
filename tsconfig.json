@@ -1,5 +1,6 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
+  "include": ["src/**/*.ts"],
   "compilerOptions": {
     // File Layout
     "rootDir": "./src",
@@ -8,7 +9,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "NodeNext",
-    "target": "ES2022",
+    "target": "ES2024",
     "moduleResolution": "nodenext",
     "types": ["node"],
     // For nodejs:

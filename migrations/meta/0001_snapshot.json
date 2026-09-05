@@ -1,0 +1,206 @@
+{
+  "id": "d33756b0-472c-46b0-a103-4971e6ff188c",
+  "prevId": "6d516949-7bb1-4dcd-8d17-2ff0c4d30fd5",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.jobs": {
+      "name": "jobs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "queue": {
+          "name": "queue",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payload": {
+          "name": "payload",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "job_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'queued'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "max_attempts": {
+          "name": "max_attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "worker_id": {
+          "name": "worker_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lease_expires_at": {
+          "name": "lease_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "jobs_idempotency_key_idx": {
+          "name": "jobs_idempotency_key_idx",
+          "columns": [
+            {
+              "expression": "idempotency_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "jobs_queued_idx": {
+          "name": "jobs_queued_idx",
+          "columns": [
+            {
+              "expression": "queue",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "where": "\"jobs\".\"status\" = 'queued'",
+          "concurrently": false
+        },
+        "jobs_expired_idx": {
+          "name": "jobs_expired_idx",
+          "columns": [
+            {
+              "expression": "lease_expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "where": "\"jobs\".\"status\" = 'processing'",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "jobs_queue_length": {
+          "name": "jobs_queue_length",
+          "value": "char_length(\"jobs\".\"queue\") BETWEEN 1 AND 100"
+        },
+        "jobs_payload_object": {
+          "name": "jobs_payload_object",
+          "value": "jsonb_typeof(\"jobs\".\"payload\") = 'object'"
+        },
+        "jobs_attempts_valid": {
+          "name": "jobs_attempts_valid",
+          "value": "\"jobs\".\"max_attempts\" BETWEEN 1 AND 20 AND \"jobs\".\"attempts\" BETWEEN 0 AND \"jobs\".\"max_attempts\""
+        },
+        "jobs_worker_length": {
+          "name": "jobs_worker_length",
+          "value": "\"jobs\".\"worker_id\" IS NULL OR char_length(\"jobs\".\"worker_id\") BETWEEN 1 AND 100"
+        },
+        "jobs_key_length": {
+          "name": "jobs_key_length",
+          "value": "\"jobs\".\"idempotency_key\" IS NULL OR char_length(\"jobs\".\"idempotency_key\") BETWEEN 1 AND 200"
+        },
+        "jobs_state_valid": {
+          "name": "jobs_state_valid",
+          "value": "\n        (\"jobs\".\"status\" = 'queued' AND \"jobs\".\"worker_id\" IS NULL AND \"jobs\".\"lease_expires_at\" IS NULL AND \"jobs\".\"attempts\" < \"jobs\".\"max_attempts\") OR\n        (\"jobs\".\"status\" = 'processing' AND \"jobs\".\"worker_id\" IS NOT NULL AND \"jobs\".\"lease_expires_at\" IS NOT NULL AND \"jobs\".\"attempts\" > 0) OR\n        (\"jobs\".\"status\" = 'completed' AND \"jobs\".\"worker_id\" IS NOT NULL AND \"jobs\".\"lease_expires_at\" IS NULL AND \"jobs\".\"attempts\" > 0) OR\n        (\"jobs\".\"status\" = 'dead' AND \"jobs\".\"worker_id\" IS NULL AND \"jobs\".\"lease_expires_at\" IS NULL AND \"jobs\".\"attempts\" = \"jobs\".\"max_attempts\")\n    "
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.job_status": {
+      "name": "job_status",
+      "schema": "public",
+      "values": [
+        "queued",
+        "processing",
+        "completed",
+        "dead"
+      ]
+    }
+  },
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
